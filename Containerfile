@@ -26,17 +26,23 @@ COPY LICENSE /usr/src/container/LICENSE
 COPY README.md /usr/src/container/README.md
 
 ENV \
-    PHP_ENABLE_CREATE_SAMPLE_PHP=FALSE \
-    PHP_MODULE_ENABLE_SOAP=TRUE \
-    PHP_MODULE_ENABLE_SODIUM=TRUE \
-    PHP_MODULE_ENABLE_XMLRPC=TRUE \
-    PHP_MODULE_ENABLE_ZIP=TRUE \
-    NGINX_WEBROOT="/www/moodle" \
-    NGINX_SITE_ENABLED="moodle" \
+
     IMAGE_NAME="nfrastack/moodle" \
     IMAGE_REPO_URL="https://github.com/nfrastack/container-moodle"
 
 RUN echo "" && \
+    BUILD_ENV=" \
+                10-nginx/NGINX_WEBROOT=/www/moodle \
+                10-nginx/NGINX_SITE_ENABLED=moodle \
+                10-nginx/NGINX_INDEX_FILE=index.php \
+                20-php-fpm/PHP_ENABLE_CREATE_SAMPLE_PHP=FALSE \
+                20-php-fpm/PHP_MODULE_ENABLE_SOAP=TRUE \
+                20-php-fpm/PHP_MODULE_ENABLE_SODIUM=TRUE \
+                20-php-fpm/PHP_MODULE_ENABLE_XMLRPC=TRUE \
+                20-php-fpm/PHP_MODULE_ENABLE_ZIP=TRUE \
+              " \
+              && \
+
     MOODLE_RUN_DEPS_ALPINE=" \
                                 aspell \
                                 email \

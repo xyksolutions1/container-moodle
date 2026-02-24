@@ -19,9 +19,9 @@ transform_var file \
 
 db_ready mariadb
 create_folder "${DATA_PATH}" "${NGINX_USER}" "${NGINX_GROUP}" 0755
-echo "*/${CRON_INTERVAL} * * * * TZ=\${TIMEZONE} php \${NGINX_WEBROOT}/admin/cli/cron.php >/dev/null 2>&1" | silent tee /container/cron/moodle_scheduled_tasks
+echo "*/${CRON_INTERVAL} * * * * TZ=\${TIMEZONE} php \${NGINX_WEBROOT}/admin/cli/cron.php >/dev/null 2>&1" | write_file /container/cron/moodle_scheduled_tasks
 
-if [ ! -f "${NGINX_WEBROOT}"/index.php ] ; then
+if [ ! -f "${NGINX_WEBROOT%/}"/index.php ] ; then
     print_info "Detecting New Install. Downloading Moodle.."
     sanity_var ADMIN_USER "Administrative User"
     sanity_var ADMIN_EMAIL "Administrative Email"
@@ -40,7 +40,7 @@ if [ ! -f "${NGINX_WEBROOT}"/index.php ] ; then
     clone_git_repo "${MOODLE_REPO_URL}" "${MOODLE_VERSION}" /usr/src/moodle
     cp -aR /usr/src/moodle/* "${NGINX_WEBROOT%/}"/
     chown -R "${NGINX_USER}":"${NGINX_GROUP}" "${NGINX_WEBROOT}"
-    cd "${NGINX_WEBROOT}"/admin/cli
+    cd "${NGINX_WEBROOT%/}"/admin/cli
     print_info "Installing Moodle ${MOODLE_VERSION}"
     sudo -u "${NGINX_USER}" TZ=${TIMEZONE} php install.php \
                                                              --adminuser=${ADMIN_USER} \
@@ -66,7 +66,7 @@ if [ ! -f "${NGINX_WEBROOT}"/index.php ] ; then
     fi
 
     if [ ! -f "${DATA_PATH%/}"/.moodle-version ]; then
-        echo "${MOODLE_VERSION} first installed on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')" | silent sudo -u "${NGINX_USER}" tee "${DATA_PATH%/}"/.moodle-version
+        echo "${MOODLE_VERSION} first installed on $(TZ=${TIMEZONE} date +'%Y-%m-%d %H:%M:%S %Z')" | write_file "${NGINX_USER}":"${NGINX_GROUP}" "${DATA_PATH%/}"/.moodle-version
     fi
 
     rm -rf /usr/src/moodle
@@ -74,11 +74,11 @@ fi
 
 
 if var_true "${ENABLE_AUTO_UPDATE}" ; then
-    if [ -n "${MOODLE_VERSION}" ] && [ "${MOODLE_VERSION}" != "$(head -n 1 ${DATA_PATH}/.moodle-version | awk '{print $1}')" ] ; then
-        print_warn "Detected in place Moodle version $(head -n 1 ${DATA_PATH}/.moodle-version | awk '{print $1}') - Upgrading to ${MOODLE_VERSION}"
+    if [ -n "${MOODLE_VERSION}" ] && [ "${MOODLE_VERSION}" != "$(head -n 1 "${DATA_PATH}"/.moodle-version | awk '{print $1}')" ] ; then
+        print_warn "Detected in place Moodle version $(head -n 1 "${DATA_PATH}"/.moodle-version | awk '{print $1}') - Upgrading to ${MOODLE_VERSION}"
         clone_git_repo "${MOODLE_REPO_URL}" "${MOODLE_VERSION}" /usr/src/moodle
         cp -aR /usr/src/moodle/* "${NGINX_WEBROOT%/}"/
-        cd "${NGINX_WEBROOT}"/admin/cli
+        cd "${NGINX_WEBROOT%/}"/admin/cli
         silent sudo -u "${NGINX_USER}" TZ=${TIMEZONE} php upgrade.php --non-interactive
         UPGRADE=TRUE
         sudo -u "${NGINX_USER}" sed -i --follow-symlinks "1 i\
@@ -91,7 +91,7 @@ chown "${NGINX_USER}":"${NGINX_GROUP}" "${DATA_PATH}"
 chown -R "${NGINX_USER}":"${NGINX_GROUP}" "${NGINX_WEBROOT}"
 chmod -R 0755 "${NGINX_WEBROOT}"
 
-cat << EOF | silent tee -a /root/.bashrc
+write_file -a /root/.bashrc <<EOF
 moosh() {
       export oldpwd="\$(pwd)"
       cd /opt/moosh

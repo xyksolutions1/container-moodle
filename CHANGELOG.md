@@ -1,7 +1,7 @@
 ## 4.4.0pre 2025-10-08 <code at nfrastack dot com>
 
    ### Changed
-      - Switch to nfrastack/nginx-php-fpm
+      - Base Image switched to nfrastack/container-nginx-php-fpm:8.x
       - MOODLE_VERSION non existence on first boot grabs latest git tag from repository
       - ENABLE_AUTO_UPGRADE works if MOODLE_VERSION differs from original version
       - Change variables and boot logic
