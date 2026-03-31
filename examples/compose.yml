@@ -48,8 +48,8 @@ services:
     restart: always
 
   moodle-db-backup:
-    container_name: moodle-db-backup 
-    image: docker.io/tiredofit/db-backup
+    container_name: moodle-db-backup
+    image: docker.io/nfrastack/db-backup
     volumes:
       - ./dbbackup:/backup
     environment:

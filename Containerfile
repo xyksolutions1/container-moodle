@@ -26,7 +26,6 @@ COPY LICENSE /usr/src/container/LICENSE
 COPY README.md /usr/src/container/README.md
 
 ENV \
-
     IMAGE_NAME="nfrastack/moodle" \
     IMAGE_REPO_URL="https://github.com/nfrastack/container-moodle"
 
@@ -42,7 +41,7 @@ RUN echo "" && \
                 20-php-fpm/PHP_MODULE_ENABLE_ZIP=TRUE \
               " \
               && \
-
+    \
     MOODLE_RUN_DEPS_ALPINE=" \
                                 aspell \
                                 email \
