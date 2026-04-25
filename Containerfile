@@ -5,16 +5,16 @@
 ARG \
     BASE_IMAGE
 
-FROM ${BASE_IMAGE}
+FROM docker.io/xyksolutions1/container-nginx-php-fpm:latest
 
 LABEL \
         org.opencontainers.image.title="Moodle" \
         org.opencontainers.image.description="Learning Management System" \
-        org.opencontainers.image.url="https://hub.docker.com/r/nfrastack/moodle" \
-        org.opencontainers.image.documentation="https://github.com/nfrastack/container-moodle/blob/main/README.md" \
-        org.opencontainers.image.source="https://github.com/nfrastack/container-moodle.git" \
-        org.opencontainers.image.authors="Nfrastack <code@nfrastack.com>" \
-        org.opencontainers.image.vendor="Nfrastack <https://www.nfrastack.com>" \
+        org.opencontainers.image.url="https://hub.docker.com/r/xyksolutions1/moodle" \
+        org.opencontainers.image.documentation="https://github.com/xyksolutions1/container-moodle/blob/main/README.md" \
+        org.opencontainers.image.source="https://github.com/xyksolutions1/container-moodle.git" \
+        org.opencontainers.image.authors="xyksolutions1" \
+        org.opencontainers.image.vendor="xyksolutions1" \
         org.opencontainers.image.licenses="MIT"
 
 ARG \
@@ -26,8 +26,8 @@ COPY LICENSE /usr/src/container/LICENSE
 COPY README.md /usr/src/container/README.md
 
 ENV \
-    IMAGE_NAME="nfrastack/moodle" \
-    IMAGE_REPO_URL="https://github.com/nfrastack/container-moodle"
+    IMAGE_NAME="xyksolutions1/moodle" \
+    IMAGE_REPO_URL="https://github.com/xyksolutions1/container-moodle"
 
 RUN echo "" && \
     BUILD_ENV=" \
